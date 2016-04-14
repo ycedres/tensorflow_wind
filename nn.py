@@ -16,8 +16,6 @@ def inference_one_hidden_layer(inputs, hidden1_units):
         name='weights')
     biases = tf.Variable(tf.zeros([hidden1_units]),
                          name='biases')
-    #hidden1 = tf.nn.relu(tf.matmul(images, weights) + biases)
-    #hidden1 = tf.nn.tanh(tf.matmul(images, weights) + biases)
     hidden1 = tf.nn.softmax(tf.matmul(inputs, weights) + biases)
   # Linear
   with tf.name_scope('identity'):
@@ -34,11 +32,7 @@ def inference_one_hidden_layer(inputs, hidden1_units):
 
 
 def loss(logits, outputs):
-
-  #mse = tf.reduce_mean(tf.pow(tf.sub(logits,labels),tf.constant(2.0)))
   mse = tf.reduce_mean(tf.pow(tf.sub(logits, outputs), 2.0))
-  cross_entropy = -tf.reduce_sum(outputs * tf.log(logits))
-
   return mse
 
 

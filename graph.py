@@ -1,5 +1,5 @@
 import tensorflow as tf
-import input_data_2
+import input_data
 import nn
 
 from six.moves import xrange
@@ -8,7 +8,7 @@ from six.moves import xrange
 flags = tf.app.flags
 FLAGS = flags.FLAGS
 flags.DEFINE_float('learning_rate', 0.01, 'Initial learning rate.')
-flags.DEFINE_integer('max_steps', 1000, 'Number of steps to run trainer.')
+flags.DEFINE_integer('max_steps', 10000, 'Number of steps to run trainer.')
 flags.DEFINE_integer('hidden1', 128, 'Number of units in hidden layer 1.')
 flags.DEFINE_integer('hidden2', 32, 'Number of units in hidden layer 2.')
 flags.DEFINE_integer('batch_size', 100, 'Batch size.  ''Must divide evenly into the dataset sizes.')
@@ -30,7 +30,7 @@ def fill_feed_dict(data_set, inputs_pl, outputs_pl):
 
 def run_training():
 
-    data_sets = input_data_2.read_wind_data_sets()
+    data_sets = input_data.read_wind_data_sets()
 
     with tf.Graph().as_default():
 
@@ -53,25 +53,9 @@ def run_training():
                                        inputs_placeholder,
                                        outputs_placeholder)
 
-            #_, logits, loss_value = sess.run([train_op, logits, loss], feed_dict=feed_dict)
             _, loss_value = sess.run([train_op, loss], feed_dict=feed_dict)
 
-            if step % 100 == 0:
-                #print(logits)
-                print(loss_value)
-                print('---------')
-
-        # if  (step + 1) == FLAGS.max_steps:
-        #     test_inputs_placeholder = tf.placeholder(tf.float32, shape=(data_sets.test.num_examples, nn.WINDOW_SIZE))
-        #     test_outputs_placeholder = tf.placeholder(tf.float32, shape=(data_sets.test.num_examples))
-        #     test_feed_dict = {
-        #         test_inputs_placeholder: data_sets.test.inputs,
-        #         test_outputs_placeholder: data_sets.test.outputs,
-        #     }
-        #     performance = sess.run(eval_correct, test_feed_dict)
-        #     print('Performance: %d') % performance
-
-            if(step + 1) == FLAGS.max_steps:
+            if (step + 1) == FLAGS.max_steps:
                 true_count = 0  # Counts the number of correct predictions.
                 steps_per_epoch = data_sets.test.num_examples // FLAGS.batch_size
                 num_examples = steps_per_epoch * FLAGS.batch_size
@@ -81,7 +65,6 @@ def run_training():
                                                outputs_placeholder)
                     true_count += sess.run(eval_correct, feed_dict=feed_dict)
                 performance = true_count / num_examples
-                #print('  Num examples: %d  Num correct: %d  Precision @ 1: %0.04f' % (num_examples, true_count, precision))
                 print('Performance: %f' % performance)
 
 

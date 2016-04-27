@@ -86,7 +86,7 @@ def read_wind_data_sets(dtype=tf.float32):
   data_sets = DataSets()
   from scipy.io import loadmat
   import math
-  datos = loadmat('/home/ycedres/PycharmProjects/doctorado/data/minutal_data_sameInstantOfDay_wStart10_wEnd14_h24.mat')
+  datos = loadmat('minutal_data_sameInstantOfDay_wStart10_wEnd14_h24.mat')
   entradas = datos['k_10_inputs']
   salidas = datos['k_10_outputs']
   salidas = salidas[0]

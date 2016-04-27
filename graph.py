@@ -36,36 +36,40 @@ def run_training():
 
         inputs_placeholder, outputs_placeholder = placeholder_inputs(FLAGS.batch_size)
 
-        logits = nn.inference_one_hidden_layer(inputs_placeholder, 10)
-        loss = nn.loss(logits, outputs_placeholder)
+        #logits = nn.inference_one_hidden_layer(inputs_placeholder, 10)
+        for i in range(1,11):
+            for j in range(1,11):
+                logits = nn.inference_two_hidden_layers(inputs_placeholder, 10,10)
 
-        train_op = nn.training(loss, FLAGS.learning_rate)
+                loss = nn.loss(logits, outputs_placeholder)
 
-        eval_correct = nn.evaluation(logits, outputs_placeholder)
+                train_op = nn.training(loss, FLAGS.learning_rate)
 
-        sess = tf.Session()
-        init = tf.initialize_all_variables()
-        sess.run(init)
+                eval_correct = nn.evaluation(logits, outputs_placeholder)
 
-        for step in range(FLAGS.max_steps):
+                sess = tf.Session()
+                init = tf.initialize_all_variables()
+                sess.run(init)
 
-            feed_dict = fill_feed_dict(data_sets.train,
-                                       inputs_placeholder,
-                                       outputs_placeholder)
+                for step in range(FLAGS.max_steps):
 
-            _, loss_value = sess.run([train_op, loss], feed_dict=feed_dict)
-
-            if (step + 1) == FLAGS.max_steps:
-                true_count = 0  # Counts the number of correct predictions.
-                steps_per_epoch = data_sets.test.num_examples // FLAGS.batch_size
-                num_examples = steps_per_epoch * FLAGS.batch_size
-                for step in xrange(steps_per_epoch):
-                    feed_dict = fill_feed_dict(data_sets.test,
+                    feed_dict = fill_feed_dict(data_sets.train,
                                                inputs_placeholder,
                                                outputs_placeholder)
-                    true_count += sess.run(eval_correct, feed_dict=feed_dict)
-                performance = true_count / num_examples
-                print('Performance: %f' % performance)
+
+                    _, loss_value = sess.run([train_op, loss], feed_dict=feed_dict)
+
+                    if (step + 1) == FLAGS.max_steps:
+                        true_count = 0  # Counts the number of correct predictions.
+                        steps_per_epoch = data_sets.test.num_examples // FLAGS.batch_size
+                        num_examples = steps_per_epoch * FLAGS.batch_size
+                        for step in xrange(steps_per_epoch):
+                            feed_dict = fill_feed_dict(data_sets.test,
+                                                       inputs_placeholder,
+                                                       outputs_placeholder)
+                            true_count += sess.run(eval_correct, feed_dict=feed_dict)
+                        performance = true_count / num_examples
+                        print('Performance: %f' % performance)
 
 
 def main(_):

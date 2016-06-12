@@ -1,3 +1,3 @@
 import graph
 
-print('Resultado: %f' % graph.run_training(10,10))
+print('Resultado: %f' % graph.run_training(30,10))

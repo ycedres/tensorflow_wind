@@ -18,14 +18,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from scipy.io import loadmat
-import math
+import gzip
+import os
+import tempfile
 
 import numpy
-
+from six.moves import urllib
+from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-class WindDataSet():
+class WindDataSet(object):
 
   def __init__(self, inputs, outputs, fake_data=False, one_hot=False,
                dtype=tf.float32):
@@ -66,7 +68,6 @@ class WindDataSet():
     if self._index_in_epoch > self._num_examples:
       # Finished epoch
       self._epochs_completed += 1
-      print ("next_batch: Epochs_completed: %d" % self._epochs_completed)
       # Shuffle the data
       perm = numpy.arange(self._num_examples)
       numpy.random.shuffle(perm)
@@ -80,14 +81,13 @@ class WindDataSet():
     return self._inputs[start:end], self._outputs[start:end]
 
 def read_wind_data_sets(dtype=tf.float32):
-
-  class DataSets():
+  class DataSets(object):
     pass
   data_sets = DataSets()
-
-
-  datos = loadmat('wind_data_set_wStart10_wEnd50_h24.mat')
-  entradas = datos ['k_10_inputs']
+  from scipy.io import loadmat
+  import math
+  datos = loadmat('minutal_data_sameInstantOfDay_wStart10_wEnd14_h24.mat')
+  entradas = datos['k_10_inputs']
   salidas = datos['k_10_outputs']
   salidas = salidas[0]
 
@@ -138,7 +138,8 @@ def read_wind_data_sets(dtype=tf.float32):
   test_y = testSet_y
 
   data_sets.train = WindDataSet(train_x, train_y, dtype=dtype)
-  data_sets.validation = WindDataSet(valid_x, valid_y,dtype=dtype)
+  data_sets.validation = WindDataSet(valid_x, valid_y,
+                                 dtype=dtype)
   data_sets.test = WindDataSet(test_x, test_y, dtype=dtype)
 
   return data_sets
